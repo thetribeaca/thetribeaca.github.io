@@ -1,9 +1,9 @@
 ---
-title: The Tribe | ACA | Welcome
+title: Welcome to The Tribe
 date: 2026-03-22 20:32:00 Z
 ---
 
-# Welcome to The Tribe.
+## Welcome
 
 We are a **men's group** who work the** ACAD 12-step recovery programme** together.
 
