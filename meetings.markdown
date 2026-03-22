@@ -5,68 +5,40 @@ date: 2026-03-22 20:44:00 Z
 
 <p>Here are upcoming meetings in your local time zone: </p>
 
-<script>
+<div id="meetings"></div>
 
-const SHARE_ID = "shrBSJGAVD8dwmzoX";
+<script>\
+const SHEET_ID = "1ft7eIPFohcfdsEKpcEesLNj3tGU1gyKVOVd8Mmb0tLc";\
+const SHEET_NAME = "Sheet1"; // change if needed
 
-async function loadMeetings() {\
-  const url = \`https://airtable.com/v0.3/view/${SHARE_ID}?pageSize=100\`;
+const URL = \`https://opensheet.elk.sh/${SHEET_ID}/${SHEET_NAME}\`;
 
-  const res = await fetch(url);\
-  const data = await res.json();
+async function loadData() {\
+  try {\
+    const res = await fetch(URL);\
+    const data = await res.json();
 
-  const container = document.getElementById("meetings");\
-  container.innerHTML = "";
+    const app = document.getElementById("meetings");
 
-  // Map column IDs → names\
-  const columnMap = {};\
-  data.columns.forEach(col => {\
-    columnMap\[col.id\] = col.name;\
-  });
+    data.forEach(row => {\
+      const card = document.createElement("div");\
+      card.style.border = "1px solid #ccc";\
+      card.style.padding = "10px";\
+      card.style.margin = "10px";
 
-  // Extract meetings\
-  const meetings = data.records.map(record => {\
-    const cells = record.cellValuesByColumnId;
+      // 👇 change column names to match your sheet headers\
+      card.innerHTML = \`\
+        <h3>${row.Name || "No name"}</h3>\
+        <p>${row.Description || ""}</p>\
+      \`;
 
-    let dateValue = null;
+      app.appendChild(card);\
+    });
 
-    for (const colId in cells) {\
-      const name = columnMap\[colId\].toLowerCase();
-
-      // 👇 THIS matches your Airtable structure\
-      if (name.includes("time") || name.includes("date")) {\
-        dateValue = cells\[colId\];\
-        break;\
-      }\
-    }
-
-    if (!dateValue) return null;
-
-    const date = new Date(dateValue);\
-    if (isNaN(date)) return null;
-
-    return date;\
-  })\
-  .filter(Boolean)\
-  .sort((a, b) => a - b); // sort upcoming first
-
-  // Render\
-  meetings.forEach(date => {\
-    const formatted = new Intl.DateTimeFormat(undefined, {\
-      weekday: "long",\
-      month: "long",\
-      day: "numeric",\
-      hour: "2-digit",\
-      minute: "2-digit",\
-    }).format(date);
-
-    const el = document.createElement("div");\
-    el.textContent = formatted;
-
-    container.appendChild(el);\
-  });\
+  } catch (err) {\
+    console.error("Error loading sheet:", err);\
+  }\
 }
 
-loadMeetings();
-
+loadData();\
 </script>
