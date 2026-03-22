@@ -4,7 +4,7 @@ date: 2026-03-22 20:44:00 Z
 ---
 
 <p>Here are upcoming meetings in your local time zone: </p>
-<p style="color:#ccc; font-size: 9px;">Meetings Finder 0.2</p>
+<p style="color:#ccc; font-size: 9px;">Meetings Finder 0.4</p>
 <div id="app"></div>
 
 <script>
@@ -14,30 +14,54 @@ const SHEET_NAME = "Sheet1"; // change if needed
 const URL = `https://opensheet.elk.sh/${SHEET_ID}/${SHEET_NAME}`;
 
 // --- Helpers ---
-const DAYS = [
-  "Sunday", "Monday", "Tuesday", "Wednesday",
-  "Thursday", "Friday", "Saturday"
-];
+const DAYS_MAP = {
+  sun: 0, sunday: 0,
+  mon: 1, monday: 1,
+  tue: 2, tuesday: 2,
+  wed: 3, wednesday: 3,
+  thu: 4, thursday: 4,
+  fri: 5, friday: 5,
+  sat: 6, saturday: 6
+};
 
-function getNextOccurrence(dayName, timeString) {
-  if (!dayName || !timeString) return null;
+function cleanRow(row) {
+  const cleaned = {};
+  for (let key in row) {
+    cleaned[key.trim()] = row[key];
+  }
+  return cleaned;
+}
+
+function parseTime(time) {
+  if (!time) return null;
+
+  const clean = time.toString().trim().replace(".", ":");
+  const parts = clean.split(":");
+
+  const hours = parseInt(parts[0], 10);
+  const minutes = parts[1] ? parseInt(parts[1], 10) : 0;
+
+  if (isNaN(hours) || isNaN(minutes)) return null;
+
+  return { hours, minutes };
+}
+
+function getNextOccurrence(dayInput, timeInput) {
+  if (!dayInput || !timeInput) return null;
 
   const now = new Date();
-  const targetDayIndex = DAYS.indexOf(dayName.trim());
 
-  if (targetDayIndex === -1) {
-    console.warn("Invalid day:", dayName);
-    return null;
-  }
+  const dayKey = dayInput.toString().trim().toLowerCase();
+  const targetDay = DAYS_MAP[dayKey];
 
-  const [hours, minutes] = timeString.split(":").map(Number);
+  if (targetDay === undefined) return null;
 
-  if (isNaN(hours) || isNaN(minutes)) {
-    console.warn("Invalid time:", timeString);
-    return null;
-  }
+  const parsedTime = parseTime(timeInput);
+  if (!parsedTime) return null;
 
-  // Create base UTC date for today at given time
+  const { hours, minutes } = parsedTime;
+
+  // Create UTC date (since your times are GMT)
   const result = new Date(Date.UTC(
     now.getUTCFullYear(),
     now.getUTCMonth(),
@@ -47,9 +71,8 @@ function getNextOccurrence(dayName, timeString) {
   ));
 
   const currentDay = result.getUTCDay();
-  let diff = targetDayIndex - currentDay;
+  let diff = targetDay - currentDay;
 
-  // If it's earlier today or already passed → next week
   if (diff < 0 || (diff === 0 && result <= now)) {
     diff += 7;
   }
@@ -61,7 +84,7 @@ function getNextOccurrence(dayName, timeString) {
 
 function formatLocalMeeting(day, time) {
   const date = getNextOccurrence(day, time);
-  if (!date) return "Invalid date";
+  if (!date) return "Check data";
 
   return new Intl.DateTimeFormat(undefined, {
     weekday: "long",
@@ -74,26 +97,28 @@ function formatLocalMeeting(day, time) {
 async function loadData() {
   try {
     const res = await fetch(URL);
-    const data = await res.json();
+    const rawData = await res.json();
 
     const app = document.getElementById("app");
     app.innerHTML = "";
 
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-    data.forEach(row => {
+    rawData.forEach(rawRow => {
+      const row = cleanRow(rawRow);
+
       const card = document.createElement("div");
 
-      // Basic styling
+      // Styling
       card.style.border = "1px solid #ccc";
       card.style.padding = "12px";
       card.style.margin = "10px 0";
       card.style.borderRadius = "8px";
 
-      // 👇 adjust these to match your sheet column names
+      // ✅ Correct column mapping
       const title = row.Title || row.Name || "Meeting";
       const day = row.Day;
-      const time = row.Time;
+      const time = row["Time (GMT)"];
 
       const localTime = formatLocalMeeting(day, time);
 
