@@ -1,10 +1,10 @@
 ---
-title: Testing
+title: The Tribe | ACA | Welcome
 date: 2026-03-22 20:32:00 Z
 ---
 
-# Welcome to the Tribe
+# The Tribe | ACA
 
-Let go and let God!
+Welcome to The Tribe!
 
-![Screenshot 2024-12-08 at 01.05.22.png](/uploads/Screenshot%202024-12-08%20at%2001.05.22.png)
+![acalogo.jpeg](/uploads/acalogo.jpeg)
