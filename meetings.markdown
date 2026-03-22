@@ -9,7 +9,7 @@ date: 2026-03-22 20:44:00 Z
 
 <script>
 const SHEET_ID = "1ft7eIPFohcfdsEKpcEesLNj3tGU1gyKVOVd8Mmb0tLc";
-const SHEET_NAME = "Sheet1"; // change if needed
+const SHEET_NAME = "Sheet1";
 
 const URL = `https://opensheet.elk.sh/${SHEET_ID}/${SHEET_NAME}`;
 
@@ -23,14 +23,6 @@ const DAYS_MAP = {
   fri: 5, friday: 5,
   sat: 6, saturday: 6
 };
-
-function cleanRow(row) {
-  const cleaned = {};
-  for (let key in row) {
-    cleaned[key.trim()] = row[key];
-  }
-  return cleaned;
-}
 
 function parseTime(time) {
   if (!time) return null;
@@ -50,7 +42,6 @@ function getNextOccurrence(dayInput, timeInput) {
   if (!dayInput || !timeInput) return null;
 
   const now = new Date();
-
   const dayKey = dayInput.toString().trim().toLowerCase();
   const targetDay = DAYS_MAP[dayKey];
 
@@ -61,7 +52,6 @@ function getNextOccurrence(dayInput, timeInput) {
 
   const { hours, minutes } = parsedTime;
 
-  // Create UTC date (since your times are GMT)
   const result = new Date(Date.UTC(
     now.getUTCFullYear(),
     now.getUTCMonth(),
@@ -97,16 +87,14 @@ function formatLocalMeeting(day, time) {
 async function loadData() {
   try {
     const res = await fetch(URL);
-    const rawData = await res.json();
+    const data = await res.json();
 
     const app = document.getElementById("app");
     app.innerHTML = "";
 
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-    rawData.forEach(rawRow => {
-      const row = cleanRow(rawRow);
-
+    data.forEach(row => {
       const card = document.createElement("div");
 
       // Styling
@@ -115,19 +103,52 @@ async function loadData() {
       card.style.margin = "10px 0";
       card.style.borderRadius = "8px";
 
-      // ✅ Correct column mapping
-      const title = row.Title || row.Name || "Meeting";
+      // --- Data mapping ---
+      const title = row["Meeting Name"] || "Meeting";
       const day = row.Day;
       const time = row["Time (GMT)"];
+      const meetingType = row["Meeting Type"];
+      const format = row["Meeting Format"];
+      const meetingURL = row["Meeting URL"];
+      const address = row.Address;
 
       const localTime = formatLocalMeeting(day, time);
 
+      // --- Conditional UI ---
+      let locationHTML = "";
+
+      if (format && format.toLowerCase().includes("zoom")) {
+        locationHTML = `
+          <a href="${meetingURL}" target="_blank"
+             style="
+               display:inline-block;
+               margin-top:10px;
+               padding:8px 12px;
+               background:#007bff;
+               color:white;
+               text-decoration:none;
+               border-radius:6px;
+               font-size:14px;
+             ">
+            Join Meeting
+          </a>
+        `;
+      } else {
+        locationHTML = `
+          <p style="margin-top:8px;">
+            📍 ${address || "Address not provided"}
+          </p>
+        `;
+      }
+
+      // --- Render ---
       card.innerHTML = `
-        <h3 style="margin:0 0 8px 0;">${title}</h3>
-        <p style="margin:0;">
-          <strong>When:</strong> ${localTime}
-        </p>
-        <p style="margin:4px 0 0 0; font-size:12px; color:#666;">
+        <h3 style="margin:0 0 6px 0;">${title}</h3>
+        <p style="margin:0;"><strong>When:</strong> ${localTime}</p>
+        <p style="margin:4px 0;"><strong>Type:</strong> ${meetingType}</p>
+        <p style="margin:4px 0;"><strong>Format:</strong> ${format}</p>
+        ${locationHTML}
+        <p style="margin:6px 0 0 0; font-size:12px; color:#666;">
           (${timezone})
         </p>
       `;
