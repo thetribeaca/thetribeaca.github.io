@@ -136,7 +136,7 @@ async function loadData() {
       } else {
         locationHTML = `
           <p style="margin-top:8px;">
-            📍 ${address || "Address not provided"}
+            📍 ${address || ""}
           </p>
         `;
       }
