@@ -5,7 +5,7 @@ date: 2026-03-22 20:32:00 Z
 
 ## Welcome
 
-We are a **men's group** who work the** ACAD 12-step recovery programme** together.
+We are a **men's group** who work the **ACAD 12-step recovery programme** together.
 
 If you have come from an alcoholic or dysfunctional family...
 
