@@ -3,12 +3,12 @@ title: Meetings
 date: 2026-03-22 20:44:00 Z
 ---
 
-<style>
-.timezone { color: #aaa }
-</style>
 <p>Here are upcoming meetings in your local time zone: </p>
 <p style="color:#ccc; font-size: 9px;">Meetings Finder 0.5</p>
 <div id="app"></div>
+<style>
+.timezone { color: #aaa }
+</style>
 
 <script>
 // Use the ID of the Google Sheet of The Tribe Meetings
