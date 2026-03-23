@@ -95,6 +95,10 @@ a.popup-link {
   display: block;
   font-size: 0.8em;
 }
+
+#filters {
+  margin-top: 1em;
+}
 </style>
 
 <div class="tabs">
