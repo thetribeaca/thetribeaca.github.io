@@ -270,7 +270,11 @@ async function loadACA(){
 
       return {
         title: m.MeetName || "ACA Meeting",
-        time: m.Time_Local,
+        time: formatLocalTime(
+          parseInt(m.DayCode),
+          m.Time_Local,
+          m.Timezone
+        ),
         date:new Date(),
         link: extractLink(m, text),
         email: extractEmail(text),
