@@ -272,9 +272,9 @@ async function loadTribe(){
     title:r["Meeting Name"],
     time:r["Time (GMT)"],
     date:new Date(),
-    link: r["Meeting URL"] ? { url: r["Meeting URL"] } : null,
+    link: r["Meeting URL"] ? { url: r["Meeting URL"], password:r["Meeting Password"] } : null,
     address:r.Address,
-    type:"meeting"
+    type:r["Meeting Format"].toLowerCase()
   }));
 
   render(list);
