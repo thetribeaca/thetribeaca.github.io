@@ -5,13 +5,6 @@ date: 2026-03-22 20:44:00 Z
 
 <p>Here are upcoming meetings in your local time zone: </p>
 <style>
-body {
-  font-family: Arial, sans-serif;
-  max-width: 1000px;
-  margin: 20px auto;
-  background:#fafafa;
-}
-
 .tabs button {
   padding:10px 16px;
   margin-right:10px;
@@ -21,6 +14,10 @@ body {
   border-radius:8px;
 }
 .tabs button.active { background:#007bff; color:white; }
+
+.filters { margin:10px 0; display:flex; gap:10px; }
+
+select { padding:8px; border-radius:6px; }
 
 #app {
   display:grid;
@@ -38,11 +35,7 @@ body {
 .title { font-weight:600; }
 .meta { font-size:13px; color:#555; }
 
-.badges {
-  display:flex;
-  gap:6px;
-  margin:6px 0;
-}
+.badges { display:flex; gap:6px; margin:6px 0; }
 
 .badge {
   padding:4px 8px;
@@ -53,6 +46,7 @@ body {
 .online { background:#e7f1ff; color:#007bff; }
 .phone { background:#fff4e5; color:#d98200; }
 .inperson { background:#e8f8f0; color:#1c7c54; }
+
 .open { background:#e8f8f0; color:#1c7c54; }
 .closed { background:#fdecea; color:#c0392b; }
 
@@ -68,11 +62,7 @@ body {
 
 .section { margin-top:6px; }
 
-.loader {
-  display:flex;
-  justify-content:center;
-  padding:40px;
-}
+.loader { display:flex; justify-content:center; padding:40px; }
 
 .spinner {
   width:40px;height:40px;
