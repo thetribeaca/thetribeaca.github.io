@@ -56,7 +56,7 @@ body {
 .open { background:#e8f8f0; color:#1c7c54; }
 .closed { background:#fdecea; color:#c0392b; }
 
-.btn {
+.meeting-btn {
   display:inline-block;
   margin-top:10px;
   padding:10px;
