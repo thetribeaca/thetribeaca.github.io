@@ -5,6 +5,7 @@ date: 2026-03-22 20:44:00 Z
 
 <p>Here are upcoming meetings in your local time zone: </p>
 <style>
+
 .tabs button {
   padding:10px 16px;
   margin-right:10px;
@@ -46,9 +47,7 @@ select { padding:8px; border-radius:6px; }
 .online { background:#e7f1ff; color:#007bff; }
 .phone { background:#fff4e5; color:#d98200; }
 .inperson { background:#e8f8f0; color:#1c7c54; }
-
 .open { background:#e8f8f0; color:#1c7c54; }
-.closed { background:#fdecea; color:#c0392b; }
 
 .meeting-btn {
   display:inline-block;
@@ -73,12 +72,46 @@ select { padding:8px; border-radius:6px; }
 }
 
 @keyframes spin { 100%{transform:rotate(360deg);} }
+
+#popup {
+  display:none;
+  position:fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background:rgba(0,0,0,0.6);
+  justify-content:center;
+  align-items:center;
+}
+#popup-box {
+  background:white;
+  padding:20px;
+  max-width:500px;
+  border-radius:10px;
+}
+
+a.popup-link {
+  text-decoration: none;
+  margin-top: 1em;
+  display: block;
+  font-size: 0.8em;
+}
 </style>
+
 <div class="tabs">
   <button id="tab-tribe" onclick="showTab('tribe')">Tribe Meetings</button>
   <button id="tab-aca" onclick="showTab('aca')">Other ACA Meetings</button>
 </div>
 
+<div id="filters"></div>
+<div id="app"></div>
+
+<div id="popup">
+  <div id="popup-box">
+    <div id="popup-content"></div>
+    <button onclick="closePopup()" class="meeting-btn">Close</button>
+  </div>
+</div>
+
 <div id="app"></div>
 <script src="/assets/lib/meetings.js"></script>
-<p style="color:#ccc; font-size: 9px;">Meetings Finder 0.5</p>
+<p style="color:#ccc; font-size: 9px;">Meetings Finder 0.6</p>
