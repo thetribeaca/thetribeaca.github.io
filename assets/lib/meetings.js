@@ -1,90 +1,4 @@
-// ================= INIT CONTAINER =================
-document.body.insertAdjacentHTML("afterbegin", `
-  <div id="meeting-widget">
-    <h2>Meetings</h2>
-    <div class="tabs">
-      <button id="tab-tribe">Tribe Meetings</button>
-      <button id="tab-aca">Other ACA Meetings</button>
-    </div>
-    <div id="app"></div>
-  </div>
-`);
-
-// ================= INJECT STYLES =================
-const style = document.createElement("style");
-style.innerHTML = `
-#meeting-widget {
-  font-family: Arial;
-  max-width: 1000px;
-  margin: 20px auto;
-}
-
-.tabs button {
-  padding:10px 16px;
-  margin-right:10px;
-  border:none;
-  background:#eee;
-  cursor:pointer;
-  border-radius:8px;
-}
-.tabs button.active { background:#007bff; color:white; }
-
-#app {
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-  gap:16px;
-}
-
-.card {
-  background:white;
-  border-radius:12px;
-  padding:16px;
-  box-shadow:0 2px 6px rgba(0,0,0,0.08);
-}
-
-.badges { display:flex; gap:6px; margin:6px 0; }
-
-.badge {
-  padding:4px 8px;
-  font-size:12px;
-  border-radius:6px;
-}
-
-.online { background:#e7f1ff; color:#007bff; }
-.phone { background:#fff4e5; color:#d98200; }
-.inperson { background:#e8f8f0; color:#1c7c54; }
-
-.btn {
-  display:inline-block;
-  margin-top:10px;
-  padding:10px;
-  background:#007bff;
-  color:white;
-  border-radius:8px;
-  text-decoration:none;
-}
-
-.loader {
-  display:flex;
-  justify-content:center;
-  padding:40px;
-}
-
-.spinner {
-  width:40px;height:40px;
-  border:4px solid #ddd;
-  border-top:4px solid #007bff;
-  border-radius:50%;
-  animation:spin 1s linear infinite;
-}
-
-@keyframes spin { 100%{transform:rotate(360deg);} }
-`;
-document.head.appendChild(style);
-
 // ================= CONFIG =================
-const app = document.getElementById("app");
-
 const SHEET_URL = "https://opensheet.elk.sh/1ft7eIPFohcfdsEKpcEesLNj3tGU1gyKVOVd8Mmb0tLc/Sheet1";
 
 const ACA_BODY = `{
@@ -104,8 +18,10 @@ const ACA_BODY = `{
 }`;
 
 // ================= UI =================
+const app = document.getElementById("app");
+
 function setActive(tab){
-  document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active"));
+  document.querySelectorAll("button").forEach(b=>b.classList.remove("active"));
   document.getElementById("tab-"+tab).classList.add("active");
 }
 
@@ -113,7 +29,7 @@ function loader(){
   app.innerHTML=`<div class="loader"><div class="spinner"></div></div>`;
 }
 
-// ================= HELPERS =================
+// ================= TIME =================
 const DAYS=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 
 function parseTime24(t){
@@ -123,6 +39,7 @@ function parseTime24(t){
 
 function nextDate(day,time){
   if(!day||!time) return null;
+
   const now=new Date();
   const [h,m]=time.split(":").map(Number);
 
@@ -135,6 +52,7 @@ function nextDate(day,time){
 
   let diff=DAYS.indexOf(day)-d.getUTCDay();
   if(diff<0||(diff===0&&d<=now)) diff+=7;
+
   d.setUTCDate(d.getUTCDate()+diff);
   return d;
 }
@@ -152,49 +70,71 @@ function format(date){
   return `${g("weekday")} ${g("hour")}:${g("minute")} (${g("timeZoneName")})`;
 }
 
+// ================= HELPERS =================
 function stripHTML(html){
   return html.replace(/<[^>]+>/g," ");
 }
 
-function extractPhone(text){
-  return text.match(/(\+?\d[\d\s\-()]{7,}\d)/)?.[1];
+function extractPhoneDetails(text){
+  const phoneMatch = text.match(/(\+?\d[\d\s\-()]{7,}\d)/);
+  const codeMatch = text.match(/(code|pass|pin|access code)[:\s]*([\d#]+)/i);
+
+  return {
+    phone: phoneMatch?.[1],
+    code: codeMatch?.[2]
+  };
 }
 
 function extractEmail(text){
   return text.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i)?.[0];
 }
 
+function getTypeClass(type){
+  if (!type) return "inperson";
+  if (type.includes("online")) return "online";
+  if (type.includes("telephone")) return "phone";
+  return "inperson";
+}
+
 // ================= RENDER =================
 function render(list){
+
   list.sort((a,b)=>a.date - b.date);
+
   app.innerHTML="";
 
   list.forEach(m=>{
     const el=document.createElement("div");
     el.className="card";
 
+    const typeClass = getTypeClass((m.type||"").toLowerCase());
+
     let actions = "";
 
     if (m.link) {
       actions += `<a href="${m.link}" target="_blank" class="btn">Join Meeting</a>`;
-    } else if (m.email) {
-      actions += `<a href="mailto:${m.email}" class="btn">Email Organiser</a>`;
+    }
+    else if (m.email) {
+      actions += `<a href="mailto:${m.email}" class="btn">Email Organiser for Meeting Link</a>`;
     }
 
     if (m.phone) {
-      actions += `<div>☎ ${m.phone}</div>`;
+      actions += `<div class="section">☎ ${m.phone} ${m.code ? `(Code: ${m.code})` : ""}</div>`;
     }
 
     if (m.address) {
-      actions += `<div>📍 ${m.address}</div>`;
+      actions += `<div class="section">📍 ${m.address}</div>`;
     }
 
     el.innerHTML=`
-      <div>${m.title}</div>
-      <div>${m.time}</div>
+      <div class="title">${m.title}</div>
+      <div class="meta">${m.time}</div>
+
       <div class="badges">
-        <div class="badge ${m.type}">${m.type}</div>
+        <div class="badge ${typeClass}">${m.type || "in-person"}</div>
+        ${m.openClosed ? `<div class="badge ${m.openClosed==="Open"?"open":"closed"}">${m.openClosed}</div>` : ""}
       </div>
+
       ${actions}
     `;
 
@@ -202,7 +142,7 @@ function render(list){
   });
 }
 
-// ================= DATA LOADERS =================
+// ================= TRIBE =================
 async function loadTribe(){
   setActive("tribe");
   loader();
@@ -212,7 +152,18 @@ async function loadTribe(){
 
   const list=data.map(r=>{
     const d=nextDate(r.Day, parseTime24(r["Time (GMT)"]));
-    const isOnline = (r["Meeting Format"]||"").toLowerCase().includes("zoom");
+
+    const formatText = (r["Meeting Format"] || "").toLowerCase();
+
+    let type = "in-person";
+    let isOnline = false;
+
+    if (formatText.includes("zoom")) {
+      type = "online";
+      isOnline = true;
+    } else if (formatText.includes("phone")) {
+      type = "telephone";
+    }
 
     return {
       title:r["Meeting Name"],
@@ -220,13 +171,14 @@ async function loadTribe(){
       date:d,
       link: isOnline ? r["Meeting URL"] : null,
       address: !isOnline ? r.Address : null,
-      type: isOnline ? "online" : "inperson"
+      type
     };
   });
 
   render(list);
 }
 
+// ================= ACA =================
 async function loadACA(){
   setActive("aca");
   loader();
@@ -246,27 +198,37 @@ async function loadACA(){
   const json=await res.json();
 
   const list=(json.results||[]).map(m=>{
-    const d=nextDate(DAYS[m.DayCode], parseTime24(m.Time_Local));
+    const day=DAYS[parseInt(m.DayCode)];
+    const time=parseTime24(m.Time_Local);
+    const d=nextDate(day,time);
+
     const text=stripHTML([m.Location,m.Notes].join(" "));
+
+    const { phone, code } = extractPhoneDetails(text);
+    const email = extractEmail(text);
+    const link = (text.match(/https?:\/\/[^\s]+/)||[])[0];
 
     return {
       title:m.MeetName,
       time:format(d),
       date:d,
-      link: text.match(/https?:\/\/[^\s]+/)?.[0],
-      email: extractEmail(text),
-      phone: extractPhone(text),
+      link,
+      email,
+      phone,
+      code,
       address:[m.Address,m.City,m.Country].filter(Boolean).join(", "),
-      type:m.m_type
+      type:m.m_type,
+      openClosed:m.OpenClosed === "O" ? "Open" : "Closed"
     };
   });
 
   render(list);
 }
 
-// ================= EVENTS =================
-document.getElementById("tab-tribe").onclick = loadTribe;
-document.getElementById("tab-aca").onclick = loadACA;
-
 // ================= INIT =================
 loadTribe();
+
+function showTab(t){
+  if(t==="tribe") loadTribe();
+  if(t==="aca") loadACA();
+}
