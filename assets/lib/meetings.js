@@ -1,162 +1,272 @@
-// Use the Sheet ID of the Google Spreadsheet of meetings
-const SHEET_ID = "1ft7eIPFohcfdsEKpcEesLNj3tGU1gyKVOVd8Mmb0tLc";
-const SHEET_NAME = "Sheet1";
+// ================= INIT CONTAINER =================
+document.body.insertAdjacentHTML("afterbegin", `
+  <div id="meeting-widget">
+    <h2>Meetings</h2>
+    <div class="tabs">
+      <button id="tab-tribe">Tribe Meetings</button>
+      <button id="tab-aca">Other ACA Meetings</button>
+    </div>
+    <div id="app"></div>
+  </div>
+`);
 
-const URL = `https://opensheet.elk.sh/${SHEET_ID}/${SHEET_NAME}`;
-
-// --- Helpers ---
-const DAYS_MAP = {
-  sun: 0, sunday: 0,
-  mon: 1, monday: 1,
-  tue: 2, tuesday: 2,
-  wed: 3, wednesday: 3,
-  thu: 4, thursday: 4,
-  fri: 5, friday: 5,
-  sat: 6, saturday: 6
-};
-
-function parseTime(time) {
-  if (!time) return null;
-
-  const clean = time.toString().trim().replace(".", ":");
-  const parts = clean.split(":");
-
-  const hours = parseInt(parts[0], 10);
-  const minutes = parts[1] ? parseInt(parts[1], 10) : 0;
-
-  if (isNaN(hours) || isNaN(minutes)) return null;
-
-  return { hours, minutes };
+// ================= INJECT STYLES =================
+const style = document.createElement("style");
+style.innerHTML = `
+#meeting-widget {
+  font-family: Arial;
+  max-width: 1000px;
+  margin: 20px auto;
 }
 
-function getNextOccurrence(dayInput, timeInput) {
-  if (!dayInput || !timeInput) return null;
+.tabs button {
+  padding:10px 16px;
+  margin-right:10px;
+  border:none;
+  background:#eee;
+  cursor:pointer;
+  border-radius:8px;
+}
+.tabs button.active { background:#007bff; color:white; }
 
-  const now = new Date();
-  const dayKey = dayInput.toString().trim().toLowerCase();
-  const targetDay = DAYS_MAP[dayKey];
+#app {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:16px;
+}
 
-  if (targetDay === undefined) return null;
+.card {
+  background:white;
+  border-radius:12px;
+  padding:16px;
+  box-shadow:0 2px 6px rgba(0,0,0,0.08);
+}
 
-  const parsedTime = parseTime(timeInput);
-  if (!parsedTime) return null;
+.badges { display:flex; gap:6px; margin:6px 0; }
 
-  const { hours, minutes } = parsedTime;
+.badge {
+  padding:4px 8px;
+  font-size:12px;
+  border-radius:6px;
+}
 
-  // GMT → UTC
-  const result = new Date(Date.UTC(
+.online { background:#e7f1ff; color:#007bff; }
+.phone { background:#fff4e5; color:#d98200; }
+.inperson { background:#e8f8f0; color:#1c7c54; }
+
+.btn {
+  display:inline-block;
+  margin-top:10px;
+  padding:10px;
+  background:#007bff;
+  color:white;
+  border-radius:8px;
+  text-decoration:none;
+}
+
+.loader {
+  display:flex;
+  justify-content:center;
+  padding:40px;
+}
+
+.spinner {
+  width:40px;height:40px;
+  border:4px solid #ddd;
+  border-top:4px solid #007bff;
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+}
+
+@keyframes spin { 100%{transform:rotate(360deg);} }
+`;
+document.head.appendChild(style);
+
+// ================= CONFIG =================
+const app = document.getElementById("app");
+
+const SHEET_URL = "https://opensheet.elk.sh/1ft7eIPFohcfdsEKpcEesLNj3tGU1gyKVOVd8Mmb0tLc/Sheet1";
+
+const ACA_BODY = `{
+  "page": 1,
+  "countryFromIP": "",
+  "m_type": ["all", "meeting", "online", "telephone"],
+  "Timezone": "America/New_York",
+  "LangValue": "",
+  "SearchText": "",
+  "Country": "",
+  "State": "",
+  "searchLocation": "",
+  "radius": 30,
+  "I_GID": "",
+  "R_GID": "",
+  "showEditLink": false
+}`;
+
+// ================= UI =================
+function setActive(tab){
+  document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active"));
+  document.getElementById("tab-"+tab).classList.add("active");
+}
+
+function loader(){
+  app.innerHTML=`<div class="loader"><div class="spinner"></div></div>`;
+}
+
+// ================= HELPERS =================
+const DAYS=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+
+function parseTime24(t){
+  const d=new Date(`1970-01-01 ${t}`);
+  return isNaN(d)?null:d.toISOString().substring(11,16);
+}
+
+function nextDate(day,time){
+  if(!day||!time) return null;
+  const now=new Date();
+  const [h,m]=time.split(":").map(Number);
+
+  const d=new Date(Date.UTC(
     now.getUTCFullYear(),
     now.getUTCMonth(),
     now.getUTCDate(),
-    hours,
-    minutes
+    h,m
   ));
 
-  const currentDay = result.getUTCDay();
-  let diff = targetDay - currentDay;
-
-  if (diff < 0 || (diff === 0 && result <= now)) {
-    diff += 7;
-  }
-
-  result.setUTCDate(result.getUTCDate() + diff);
-
-  return result;
+  let diff=DAYS.indexOf(day)-d.getUTCDay();
+  if(diff<0||(diff===0&&d<=now)) diff+=7;
+  d.setUTCDate(d.getUTCDate()+diff);
+  return d;
 }
 
-function formatLocalMeeting(day, time) {
-  const date = getNextOccurrence(day, time);
-  if (!date) return "Check data";
+function format(date){
+  const parts=new Intl.DateTimeFormat(undefined,{
+    weekday:"long",
+    hour:"2-digit",
+    minute:"2-digit",
+    hour12:false,
+    timeZoneName:"short"
+  }).formatToParts(date);
 
-  const formatter = new Intl.DateTimeFormat(undefined, {
-    weekday: "long",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,           // ✅ force 24-hour format
-    timeZoneName: "short"
+  const g=t=>parts.find(p=>p.type===t)?.value;
+  return `${g("weekday")} ${g("hour")}:${g("minute")} (${g("timeZoneName")})`;
+}
+
+function stripHTML(html){
+  return html.replace(/<[^>]+>/g," ");
+}
+
+function extractPhone(text){
+  return text.match(/(\+?\d[\d\s\-()]{7,}\d)/)?.[1];
+}
+
+function extractEmail(text){
+  return text.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i)?.[0];
+}
+
+// ================= RENDER =================
+function render(list){
+  list.sort((a,b)=>a.date - b.date);
+  app.innerHTML="";
+
+  list.forEach(m=>{
+    const el=document.createElement("div");
+    el.className="card";
+
+    let actions = "";
+
+    if (m.link) {
+      actions += `<a href="${m.link}" target="_blank" class="btn">Join Meeting</a>`;
+    } else if (m.email) {
+      actions += `<a href="mailto:${m.email}" class="btn">Email Organiser</a>`;
+    }
+
+    if (m.phone) {
+      actions += `<div>☎ ${m.phone}</div>`;
+    }
+
+    if (m.address) {
+      actions += `<div>📍 ${m.address}</div>`;
+    }
+
+    el.innerHTML=`
+      <div>${m.title}</div>
+      <div>${m.time}</div>
+      <div class="badges">
+        <div class="badge ${m.type}">${m.type}</div>
+      </div>
+      ${actions}
+    `;
+
+    app.appendChild(el);
+  });
+}
+
+// ================= DATA LOADERS =================
+async function loadTribe(){
+  setActive("tribe");
+  loader();
+
+  const res=await fetch(SHEET_URL);
+  const data=await res.json();
+
+  const list=data.map(r=>{
+    const d=nextDate(r.Day, parseTime24(r["Time (GMT)"]));
+    const isOnline = (r["Meeting Format"]||"").toLowerCase().includes("zoom");
+
+    return {
+      title:r["Meeting Name"],
+      time:format(d),
+      date:d,
+      link: isOnline ? r["Meeting URL"] : null,
+      address: !isOnline ? r.Address : null,
+      type: isOnline ? "online" : "inperson"
+    };
   });
 
-  const parts = formatter.formatToParts(date);
-
-  const weekday = parts.find(p => p.type === "weekday")?.value;
-  const hour = parts.find(p => p.type === "hour")?.value;
-  const minute = parts.find(p => p.type === "minute")?.value;
-  const tz = parts.find(p => p.type === "timeZoneName")?.value;
-
-  return `${weekday} ${hour}:${minute} (${tz})`;
+  render(list);
 }
 
-// --- Main ---
-async function loadData() {
-  try {
-    const res = await fetch(URL);
-    const data = await res.json();
+async function loadACA(){
+  setActive("aca");
+  loader();
 
-    const app = document.getElementById("app");
-    app.innerHTML = "";
+  const res=await fetch(
+    "https://adultchildren.org/wp-json/wsom/v1/meeting-search",
+    {
+      method:"POST",
+      headers:{
+        "Accept":"application/json",
+        "Content-Type":"application/json"
+      },
+      body: ACA_BODY
+    }
+  );
 
-    data.forEach(row => {
-      const card = document.createElement("div");
+  const json=await res.json();
 
-      // Styling
-      card.style.border = "1px solid #ccc";
-      card.style.padding = "12px";
-      card.style.margin = "10px 0";
-      card.style.borderRadius = "8px";
+  const list=(json.results||[]).map(m=>{
+    const d=nextDate(DAYS[m.DayCode], parseTime24(m.Time_Local));
+    const text=stripHTML([m.Location,m.Notes].join(" "));
 
-      // --- Data mapping ---
-      const title = row["Meeting Name"] || "Meeting";
-      const day = row.Day;
-      const time = row["Time (GMT)"];
-      const meetingType = row["Meeting Type"];
-      const format = row["Meeting Format"];
-      const meetingURL = row["Meeting URL"];
-      const address = row.Address;
+    return {
+      title:m.MeetName,
+      time:format(d),
+      date:d,
+      link: text.match(/https?:\/\/[^\s]+/)?.[0],
+      email: extractEmail(text),
+      phone: extractPhone(text),
+      address:[m.Address,m.City,m.Country].filter(Boolean).join(", "),
+      type:m.m_type
+    };
+  });
 
-      const localTime = formatLocalMeeting(day, time);
-
-      // --- Conditional UI ---
-      let locationHTML = "";
-
-      if (format && format.toLowerCase().includes("zoom")) {
-        locationHTML = `
-          <a href="${meetingURL}" target="_blank"
-             style="
-               display:inline-block;
-               margin-top:10px;
-               padding:8px 12px;
-               background:#007bff;
-               color:white;
-               text-decoration:none;
-               border-radius:6px;
-               font-size:14px;
-             ">
-            Join Meeting
-          </a>
-        `;
-      } else {
-        locationHTML = `
-          <p style="margin-top:8px;">
-            📍 ${address || "Address not provided"}
-          </p>
-        `;
-      }
-
-      // --- Render ---
-      card.innerHTML = `
-        <h3 style="margin:0 0 6px 0;">${title}</h3>
-        <p style="margin:0;"><strong>When:</strong> ${localTime}</p>
-        <p style="margin:4px 0;"><strong>Type:</strong> ${meetingType}</p>
-        <p style="margin:4px 0;"><strong>Format:</strong> ${format}</p>
-        ${locationHTML}
-      `;
-
-      app.appendChild(card);
-    });
-
-  } catch (err) {
-    console.error("Error loading sheet:", err);
-  }
+  render(list);
 }
 
-loadData();
+// ================= EVENTS =================
+document.getElementById("tab-tribe").onclick = loadTribe;
+document.getElementById("tab-aca").onclick = loadACA;
+
+// ================= INIT =================
+loadTribe();
