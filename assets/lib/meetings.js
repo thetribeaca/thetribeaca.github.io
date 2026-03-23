@@ -112,10 +112,10 @@ function render(list){
     let actions = "";
 
     if (m.link) {
-      actions += `<a href="${m.link}" target="_blank" class="btn">Join Meeting</a>`;
+      actions += `<a href="${m.link}" target="_blank" class="meeting-btn">Join Meeting</a>`;
     }
     else if (m.email) {
-      actions += `<a href="mailto:${m.email}" class="btn">Email Organiser for Meeting Link</a>`;
+      actions += `<a href="mailto:${m.email}" class="meeting-btn">Email Organiser for Meeting Link</a>`;
     }
 
     if (m.phone) {
