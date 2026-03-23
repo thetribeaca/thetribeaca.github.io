@@ -172,6 +172,42 @@ function getTypeClass(type){
   return "inperson";
 }
 
+function formatLocalTime(dayCode, timeStr, sourceTZ){
+  if (!timeStr) return "Invalid time";
+
+  const [time, modifier] = timeStr.split(" ");
+  let [hours, minutes] = time.split(":").map(Number);
+
+  if (modifier?.toLowerCase() === "pm" && hours !== 12) hours += 12;
+  if (modifier?.toLowerCase() === "am" && hours === 12) hours = 0;
+
+  // get current date in source timezone
+  const now = new Date();
+  const base = new Date(
+    now.toLocaleString("en-US", { timeZone: sourceTZ })
+  );
+
+  base.setHours(hours, minutes, 0, 0);
+
+  // adjust to correct weekday
+  let diff = dayCode - base.getDay();
+  if (diff < 0) diff += 7;
+  base.setDate(base.getDate() + diff);
+
+  // format in USER timezone
+  const parts = new Intl.DateTimeFormat(undefined, {
+    weekday: "long",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+    timeZoneName: "short"
+  }).formatToParts(base);
+
+  const get = t => parts.find(p => p.type === t)?.value;
+
+  return `${get("weekday")} ${get("hour")}:${get("minute")} (${get("timeZoneName")})`;
+}
+
 // ================= RENDER =================
 function render(list){
   app.innerHTML="";
