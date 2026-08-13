@@ -9,7 +9,7 @@ We are a **Men's Movement** who Study the **ACAD 12-step recovery programme** to
 
 If you have come from an addicted or dysfunctional family...
 
-If you feel like a child locked in an adults body...
+If you feel like a child locked in an adults body sometimes...
 
 If you struggle with addiction...
 
@@ -17,6 +17,8 @@ If you struggle with depression, anxiety, post-traumatic stress disorder (PTSD).
 
 If you deal with powerful emotions, and react when you really should pause, consider, then ACT.
 
-Then we warmly welcome you to The Tribe of Brothers (TToB)
+There is a **Solution**. You're in the **Right Place.**
+
+Then we warmly welcome you to **The Tribe of Brothers (TToB)**
 
 ![acalogo.jpeg](/uploads/acalogo.jpeg)
