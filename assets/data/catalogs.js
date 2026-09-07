@@ -329,7 +329,7 @@ window.TTOB_CATALOGS = {
       "emblem": "NH",
       "title": "New Hope Beginners Guide",
       "description": "A New Hope: ACA beginner material for newcomers who want a simple place to start.",
-      "href": "https://drive.google.com/open?id=1smfeT1aa8hj4YgbUt80KOpEtwU6ZC3e4&usp=drive_fs",
+      "href": "/assets/resources/a-new-hope-aca-beginners-meeting-handbook.pdf",
       "action": "Open Guide",
       "external": true,
       "kind": "Beginner Guide"
@@ -368,7 +368,7 @@ window.TTOB_CATALOGS = {
       "title": "Archetypes · Volume 1 · Issue 1",
       "description": "Archetypes ACAD Tribal Newsletter — Volume 1, Issue 1.",
       "href": "archetypes/issue-01.html",
-      "sourceHref": "https://drive.google.com/open?id=1_E59xFGWTa-iIzgcXSR1Oj22nuPiZ2hO&usp=drive_fs",
+      "sourceHref": "/assets/resources/archetypes-v01-e01-2026.pdf",
       "action": "Open Issue",
       "kind": "Newsletter"
     },
@@ -377,7 +377,7 @@ window.TTOB_CATALOGS = {
       "title": "Archetypes · Volume 1 · Issue 2",
       "description": "Archetypes ACAD Tribal Newsletter — Volume 1, Issue 2.",
       "href": "archetypes/issue-02.html",
-      "sourceHref": "https://drive.google.com/open?id=1BexAt9Tjj-ARg00iabj-7hnU4uyeGi1F&usp=drive_fs",
+      "sourceHref": "/assets/resources/archetypes-v01-e02-2026.pdf",
       "action": "Open Issue",
       "kind": "Newsletter"
     },
@@ -386,7 +386,7 @@ window.TTOB_CATALOGS = {
       "title": "Archetypes · Volume 1 · Issue 3",
       "description": "Archetypes ACAD Tribal Newsletter — Volume 1, Issue 3.",
       "href": "archetypes/issue-03.html",
-      "sourceHref": "https://drive.google.com/open?id=1yvzHi2OLo_WFENRi5Q_LGdBT91G79tPs&usp=drive_fs",
+      "sourceHref": "/assets/resources/archetypes-v01-e03-2026.pdf",
       "action": "Open Issue",
       "kind": "Newsletter"
     }
