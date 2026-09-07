@@ -27,7 +27,7 @@ const seqs={
   {path:'archetypes.html',title:'Archetypes Newsletter'},
   {path:'brotherhood-prayer.html',title:'Tribe Brotherhood Prayer'},
   {path:'serenity-prayer.html',title:'Serenity Prayer'},
-  {path:'https://drive.google.com/open?id=1smfeT1aa8hj4YgbUt80KOpEtwU6ZC3e4&usp=drive_fs',title:'New Hope Beginners Guide'},
+  {path:'assets/resources/a-new-hope-aca-beginners-meeting-handbook.pdf',title:'New Hope Beginners Guide'},
   {path:'https://drive.google.com/open?id=1u-MuyyZ9mAEBAIBRho2xbSt5HsKIoVAx&usp=drive_fs',title:"Tony A's 12 Step Workbook"},
   {path:'https://drive.google.com/open?id=1xQhYxlE9FjEm1b3ZHBnUoKpNVH1fU_7F&usp=drive_fs',title:'The Meetings List'},
   {path:'meetings.html?view=acad-all',title:'Find All ACAD Meetings'}]
