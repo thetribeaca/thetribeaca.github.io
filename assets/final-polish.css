@@ -13,3 +13,58 @@
 .archetypes-inner{width:min(1240px,91vw);margin:auto}.archetypes-hero h1{font-size:clamp(3.2rem,7vw,6.6rem);margin:.12em 0 .22em;color:#f2f4f6}.archetypes-hero p{max-width:820px;font-size:1.2rem;line-height:1.65;color:#c8d0d7}.archetypes-carousel-section{padding:58px 0 82px}.archetypes-carousel-section h2{color:#f1f4f6;margin:.25em 0 24px}.archetypes-note{text-align:center;color:#bfc7cf;font:700 .74rem/1.5 Arial,sans-serif;letter-spacing:.05em;margin-top:10px}
 .archetype-issue-main{min-height:100vh;background:radial-gradient(circle at 50% 0,rgba(191,203,214,.14),transparent 34%),linear-gradient(180deg,#07111a,#02070c);color:#eef2f5;padding:72px 5vw 92px}.archetype-issue-wrap{width:min(960px,92vw);margin:auto}.archetype-issue-kicker{font:800 .78rem/1.3 Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#bdc6ce}.archetype-issue-main h1{font-size:clamp(2.7rem,6vw,5.5rem);line-height:1.02;margin:.28em 0 .28em;color:#f3f5f7}.archetype-issue-lede{font-size:1.18rem;line-height:1.65;color:#cbd2d8;max-width:760px}.archetype-issue-card{margin:38px auto 26px;min-height:440px;padding:52px 40px;border:1px solid rgba(244,248,251,.82);border-radius:24px;background:radial-gradient(circle at 50% 18%,rgba(255,255,255,.23),transparent 32%),linear-gradient(145deg,#dce1e5 0,#87939e 44%,#f0f3f5 72%,#a6b0b9 100%);box-shadow:inset 0 1px 0 #fff,0 28px 78px rgba(0,0,0,.56),0 0 35px rgba(215,229,240,.18);color:#101820;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}.archetype-issue-number{font:900 clamp(4rem,12vw,8rem)/.9 Georgia,serif;letter-spacing:-.06em;color:#131b22;text-shadow:0 1px 0 #fff}.archetype-issue-card h2{font-size:clamp(1.8rem,4vw,3rem);margin:.45em 0 .25em}.archetype-issue-card p{max-width:650px;color:#303a43;line-height:1.65}.archetype-open{margin-top:20px!important}.archetype-source-note{font:italic .9rem/1.55 Georgia,serif;color:#aeb7bf;text-align:center;margin:14px auto 0;max-width:720px}.archetype-issue-main .reading-nav{border-top-color:rgba(202,211,219,.28)!important}.archetype-issue-main .reading-nav a{color:#eef3f7!important}
 @media(max-width:700px){.archetypes-hero{padding-top:58px}.archetype-issue-main{padding:48px 3vw 76px}.archetype-issue-card{padding:38px 22px;min-height:360px}.archetype-issue-main .reading-nav{gap:9px;flex-wrap:wrap}.archetype-issue-main .reading-nav a{flex:1 1 44%;font-size:.7rem!important}}
+/* TToB-O Interactive 5.0 — NARROW WEBSITE CORRECTION PASS — 2026-09-08
+   Brightens only the approved shared platinum/dark treatment. Geometry, hero artwork,
+   carousel cards and page structure are intentionally unchanged. */
+.platinum-floatbar{
+  background:
+    radial-gradient(circle at 12% -40%,rgba(225,236,246,.22),transparent 39%),
+    linear-gradient(180deg,rgba(14,29,41,.992),rgba(6,16,24,.988))!important;
+  border-bottom-color:rgba(244,248,251,.84)!important;
+}
+@media (min-width:1041px){
+  .platinum-nav .ttob-master-btn{
+    border-color:rgba(247,250,252,.96)!important;
+    background:
+      linear-gradient(180deg,rgba(255,255,255,.46) 0%,rgba(255,255,255,.18) 24%,transparent 48%),
+      linear-gradient(145deg,#9ca8b2 0%,#697681 47%,#8d99a4 100%)!important;
+    box-shadow:
+      inset 0 1px 0 #fff,
+      inset 0 -1px 0 rgba(65,77,87,.66),
+      0 0 0 1px rgba(181,194,205,.76),
+      0 5px 14px rgba(0,0,0,.34)!important;
+  }
+}
+@media (max-width:1040px){
+  .platinum-nav .ttob-master-btn{
+    border-color:rgba(247,250,252,.94)!important;
+    background:
+      linear-gradient(180deg,rgba(255,255,255,.42) 0%,rgba(255,255,255,.16) 26%,transparent 50%),
+      linear-gradient(145deg,#929faa 0%,#64727e 50%,#87949f 100%)!important;
+    box-shadow:inset 0 1px 0 #fff,0 0 0 1px rgba(177,190,201,.74),0 4px 12px rgba(0,0,0,.32)!important;
+  }
+}
+:is(.ttob-library-jump,.actions .btn,.reading-actions a,.reading-bottom-actions a,.reading-nav a,.episode-nav a,.meeting-actions a,.download-btn,.ttob-slim-action,.smr-cta,.paypal-cta){
+  border-color:rgba(239,245,250,.88)!important;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.38) 0%,rgba(255,255,255,.12) 28%,transparent 50%),
+    linear-gradient(145deg,#8996a1 0%,#5f6d78 50%,#7f8c97 100%)!important;
+  color:#fff!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 0 0 1px rgba(171,185,197,.68),0 5px 14px rgba(0,0,0,.3)!important;
+}
+.dark,.closing{
+  background:
+    radial-gradient(circle at 50% 0%,rgba(154,176,194,.18),transparent 56%),
+    linear-gradient(180deg,#0c1b27 0%,#07121b 100%)!important;
+}
+.dark h2,.dark h3,.closing h2,.closing h3{
+  color:#f8fafc!important;
+  text-shadow:0 1px 16px rgba(211,225,236,.15);
+}
+.dark .section-kicker,.closing .section-kicker,.dark .section-number,.dark .oracle-eyebrow{
+  color:#d8e1e8!important;
+}
+.dark .ttob-carousel-frame,.dark .ttob-carousel-viewport{
+  background:linear-gradient(180deg,rgba(178,194,207,.10),rgba(88,108,124,.055))!important;
+  box-shadow:inset 0 0 0 1px rgba(211,222,231,.08)!important;
+}
