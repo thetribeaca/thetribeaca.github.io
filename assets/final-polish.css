@@ -1,4 +1,15 @@
 
+
+/* TToB-O Interactive 5.0 — CONTRAST + AUTHOR CREDIT — 2026-09-09
+   Preserve approved platinum surfaces; correct only foreground legibility and add discreet authorship. */
+.platinum-nav .ttob-master-btn::before{background:none!important;-webkit-background-clip:border-box!important;background-clip:border-box!important;color:#fff!important;-webkit-text-fill-color:#fff!important;text-shadow:0 1px 2px rgba(0,0,0,.92),0 0 7px rgba(255,255,255,.16)!important;filter:none!important}
+.dark .ttob-carousel-card h3,.closing .ttob-carousel-card h3{color:#111820!important;-webkit-text-fill-color:#111820!important;text-shadow:none!important}
+.dark .ttob-carousel-card p,.closing .ttob-carousel-card p{color:#28313a!important;-webkit-text-fill-color:#28313a!important}
+.dark .ttob-carousel-card .ttob-carousel-index,.closing .ttob-carousel-card .ttob-carousel-index{color:#59636e!important;-webkit-text-fill-color:#59636e!important}
+.dark .ttob-carousel-card .ttob-carousel-kind,.closing .ttob-carousel-card .ttob-carousel-kind{color:#56616b!important;-webkit-text-fill-color:#56616b!important}
+.dark .ttob-carousel-card .ttob-carousel-open,.closing .ttob-carousel-card .ttob-carousel-open{color:#111820!important;-webkit-text-fill-color:#111820!important}
+.copyright-footer::after{content:" · Written & Designed by Coach SSS";color:rgba(238,242,245,.72);font-size:.88em;font-weight:500;letter-spacing:.015em;white-space:normal}
+
 /* TToB 1.5 FINAL REVIEW POLISH — 2026-09-03 */
 :root{--ttob-final-ring:rgba(226,235,243,.92);--ttob-final-glow:rgba(219,234,247,.34)}
 /* Review build should look exactly like the intended public site. */
